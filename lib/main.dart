@@ -106,8 +106,9 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             const Text('You have pushed the button this many times:'),
             Image.asset("images/algonquin.jpg", height:300, width:300),
+            ElevatedButton(onPressed: () {  } //<-- Lambda, or anonymous function
 
-            Text(      '$_counter',   style: Theme.of(context).textTheme.headlineMedium,            ),
+              , child: Image.asset("images/algonquin.jpg", height:100, width:100),),
           ],
         ),
       ),
@@ -117,5 +118,10 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  void buttonClicked()
+  {
+
   }
 }
