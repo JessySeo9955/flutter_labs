@@ -55,6 +55,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  var isChecked = false;
 
   void _incrementCounter() {
     setState(() {
@@ -104,11 +105,21 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Image.asset("images/algonquin.jpg", height:300, width:300),
-            ElevatedButton(onPressed: () {  } //<-- Lambda, or anonymous function
 
-              , child: Image.asset("images/algonquin.jpg", height:100, width:100),),
+            Padding(padding:EdgeInsets.fromLTRB(0, 50, 0, 0),
+               child: const Text('You have pushed the button this many times:')),
+            Semantics(child: Image.asset("images/algonquin.jpg", height:100, width:100) ,
+                label: 'Algonquin College Logo',),
+            ElevatedButton(onPressed: () {  } //<-- Lambda, or anonymous function
+              , child: Image.asset("images/algonquin.jpg", height:50, width:50),),
+            Checkbox( value: isChecked, onChanged:  (newChecked) {
+            setState(() {
+              isChecked = newChecked !; // ! is non-null assertion. If it null, get red screen
+
+            });
+
+          } )
+
           ],
         ),
       ),
