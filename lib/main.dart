@@ -56,6 +56,24 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   var isChecked = false;
+  var myFontSize = 0.0;
+  late TextEditingController _controller; //late means promise to initialize it later
+
+  //you're visible
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(); //doing your promise to initialize
+  }
+
+  //you are being removed
+  @override
+  void dispose() {
+   super.dispose();
+   //free memory:
+    _controller.dispose();
+  }
+
 
   void _incrementCounter() {
     setState(() {
@@ -107,10 +125,18 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
 
             Padding(padding:EdgeInsets.fromLTRB(0, 50, 0, 0),
-               child: const Text('You have pushed the button this many times:')),
+               child:  Text("You have typed:  ${_controller.value.text}" )),
             Semantics(child: Image.asset("images/algonquin.jpg", height:100, width:100) ,
                 label: 'Algonquin College Logo',),
-            ElevatedButton(onPressed: () {  } //<-- Lambda, or anonymous function
+            ElevatedButton(onPressed: () { //paste the text written
+              setState((){
+
+                var txt = _controller.value.text;
+                //overwrite the text in textfield:
+                _controller.text = "see your text above:";
+              });
+
+            } //<-- Lambda, or anonymous function
               , child: Image.asset("images/algonquin.jpg", height:50, width:50),),
             Checkbox( value: isChecked, onChanged:  (newChecked) {
             setState(() {
@@ -121,7 +147,17 @@ class _MyHomePageState extends State<MyHomePage> {
               setState(() {
                 isChecked = newChecked !; // ! is non-null assertion. If it null, get red screen
               });
-            })
+            }),
+            Padding(child:
+                TextField(controller: _controller, decoration:
+                InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText:"Put your name here",
+                labelText: "First Name"
+
+                ) ),
+              padding: EdgeInsets.fromLTRB(50, 0, 50, 0)
+            )
 
           ],
         ),
