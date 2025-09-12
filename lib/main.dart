@@ -115,10 +115,13 @@ class _MyHomePageState extends State<MyHomePage> {
             Checkbox( value: isChecked, onChanged:  (newChecked) {
             setState(() {
               isChecked = newChecked !; // ! is non-null assertion. If it null, get red screen
-
             });
-
-          } )
+          } ),
+            Switch(value: isChecked, onChanged: (newChecked) {
+              setState(() {
+                isChecked = newChecked !; // ! is non-null assertion. If it null, get red screen
+              });
+            })
 
           ],
         ),
