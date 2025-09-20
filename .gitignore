@@ -1,0 +1,35 @@
+# Flutter/Dart/Pub related
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+
+# Build outputs
+build/
+windows/flutter/ephemeral/
+android/.gradle/
+android/app/build/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/.generated/
+ios/Pods/
+macos/Flutter/ephemeral/
+linux/flutter/ephemeral/
+
+# Generated plugin registrants
+**/GeneratedPluginRegistrant.*
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Other
+coverage/
