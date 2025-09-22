@@ -4,30 +4,27 @@ void main() {
   runApp(const MyApp());
 }
 
+enum FoodCategory {
+  meat,
+  course,
+  dessert,
+}
+
+class FoodItem {
+  final String name;
+  final String imageSrc;
+
+  FoodItem({required this.name, required this.imageSrc});
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
@@ -37,16 +34,6 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -55,7 +42,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late TextEditingController _controller; // initialize later
-  var imageName = 'images/question-mark.png';
+  var imageName = 'images/beef.jpg';
 
   @override
   void initState() {
@@ -75,70 +62,137 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+
+
+
+  Widget buildMainTitle(String text) {
+    return Text(text.toUpperCase(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0));
+  }
+
+  Widget buildSubTitle(String text) {
+    return Text(text.toUpperCase(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0));
+  }
+
+  Widget buildBodyText(String text) {
+    return Text(text, style: TextStyle(fontSize: 12.0));
+  }
+
+  Widget buildCustomTitle(String text, TextStyle style) {
+    return Text(text, style: style);
+  }
+
+  Widget buildCategoryItemCard(FoodItem item, TextStyle style, {bool isStack = false}) {
+    List<Widget> children = [
+      CircleAvatar(
+        backgroundImage: AssetImage(item.imageSrc),
+        radius: 150,
+      ),
+      // ClipOval(
+      //   child: Image.asset(
+      //     item.imageSrc,
+      //     width: 150,   // set width
+      //     height: 150,  // set height
+      //     fit: BoxFit.cover, // crop + scale
+      //   )
+      // ),
+      buildCustomTitle(item.name, style),
+    ];
+    if (isStack) {
+      return Stack(alignment: AlignmentDirectional.center, children: children, );
+    }
+    return Column(children: children);
+  }
+
+  Widget buildCategory(FoodCategory category) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: buildCategoryChildren(category),
+    );
+  }
+
+  List<Widget> buildCategoryChildren(FoodCategory category) {
+    bool isStack = false;
+    TextStyle style = TextStyle(color: Colors.black, fontSize: 14.0);
+    String categoryTitle = '';
+
+    switch(category) {
+      case FoodCategory.meat:
+        categoryTitle = 'MY MEAT';
+        isStack = true;
+        style = TextStyle(color: Colors.white, fontSize: 14.0, fontWeight: FontWeight.bold);
+        break;
+      case FoodCategory.course:
+        categoryTitle = 'MY COURSE';
+        break;
+      case FoodCategory.dessert:
+        categoryTitle = 'MY DESSERT';
+        break;
+    }
+
+    Widget title = buildSubTitle(categoryTitle);
+    List<Widget> items = categoryItems(category).map((item) => buildCategoryItemCard(item, style, isStack: isStack)).toList();
+
+    return [Padding(padding: EdgeInsetsGeometry.all(16), child: title), Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        spacing: 16,
+        children: items)];
+  }
+
+  List<FoodItem> categoryItems(FoodCategory category) {
+    List<FoodItem> items = [];
+
+    switch(category) {
+      case FoodCategory.meat:
+        items.add(FoodItem(name: 'BEEF', imageSrc: 'images/beef.jpg'));
+        items.add(FoodItem(name: 'CHICKEN', imageSrc: 'images/chicken.jpg'));
+        items.add(FoodItem(name: 'PORK', imageSrc: 'images/pork.jpg'));
+        items.add(FoodItem(name: 'SEAFOOD', imageSrc: 'images/seafood.jpg'));
+        break;
+
+      case FoodCategory.course:
+        items.add(FoodItem(name: 'Main Dishes', imageSrc: 'images/maindish.jpg'));
+        items.add(FoodItem(name: 'Salad Recipes', imageSrc: 'images/salad.jpg'));
+        items.add(FoodItem(name: 'Side Dishes', imageSrc: 'images/side_dish.jpg'));
+        items.add(FoodItem(name: 'Crockpot', imageSrc: 'images/crokpot.jpg'));
+        break;
+
+      case FoodCategory.dessert:
+        items.add(FoodItem(name: 'Ice Cream', imageSrc: 'images/icecream.jpg'));
+        items.add(FoodItem(name: 'Brownies', imageSrc: 'images/brownie.jpg'));
+        items.add(FoodItem(name: 'Pies', imageSrc: 'images/pies.jpg'));
+        items.add(FoodItem(name: 'Cookies', imageSrc: 'images/cookies.jpg'));
+        break;
+    }
+
+    return items;
+  }
+
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            TextField(obscureText: true, decoration: InputDecoration(hintText: 'Login', labelText: 'login',  border: OutlineInputBorder())),
-            TextField(controller: _controller, obscureText: false, decoration: InputDecoration(hintText: 'Password', labelText: 'password',  border: OutlineInputBorder())),
-            ElevatedButton(onPressed: () {
-              var txt = _controller.value.text;
-              if (txt == '123') {
-                changeImageSource('images/idea.png');
-              } else {
-
-                changeImageSource('images/stop.png');
-              }
-            }, child: Text('Login')
+        child: 
+          Padding(padding: EdgeInsets.all(16.0), child:
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                buildMainTitle('Browse Categories'),
+                buildBodyText('Not sure about exactly which recipe you\'re looking for? Do a search, or dive into our most popular categories'),
+                buildCategory(FoodCategory.meat),
+                buildCategory(FoodCategory.course),
+                buildCategory(FoodCategory.dessert)
+              ],
             ),
-            Semantics(label: 'image', child: Image.asset(imageName, height: 200, width: 200)),
-            // const Text('You have pushed the button this many times:'),
-            // Text(
-            //   '$_counter',
-            //   style: Theme.of(context).textTheme.headlineMedium,
-            // ),
-          ],
-        ),
+          )
+
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {},
-      //   tooltip: 'Increment2',
-      //   child: const Icon(Icons.add),
-      // ), // This trailing comma makes auto-formatting nicer for build methods.
-      //
     );
   }
 }
