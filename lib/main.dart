@@ -85,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
     List<Widget> children = [
       CircleAvatar(
         backgroundImage: AssetImage(item.imageSrc),
-        radius: 150,
+        radius: 50,
       ),
       // ClipOval(
       //   child: Image.asset(
@@ -103,6 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Column(children: children);
   }
 
+  // category layout
   Widget buildCategory(FoodCategory category) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -111,6 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  // category children
   List<Widget> buildCategoryChildren(FoodCategory category) {
     bool isStack = false;
     TextStyle style = TextStyle(color: Colors.black, fontSize: 14.0);
@@ -131,9 +133,15 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     Widget title = buildSubTitle(categoryTitle);
+
+    // build each item with stack or column
     List<Widget> items = categoryItems(category).map((item) => buildCategoryItemCard(item, style, isStack: isStack)).toList();
 
-    return [Padding(padding: EdgeInsetsGeometry.all(16), child: title), Row(
+    return [
+      // subtitle
+      Padding(padding: EdgeInsetsGeometry.all(16), child: title),
+      // item list
+      Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         spacing: 16,
