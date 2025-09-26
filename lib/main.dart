@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -64,6 +67,25 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _controller = TextEditingController(); //doing your promise to initialize
+
+    Future.delayed(Duration.zero,  () {
+
+
+      //this is the snackbar:
+      var snackBar = SnackBar(
+          content: Text('Do you want to reload your string?'),
+          action: SnackBarAction( label:"Yes please",
+              onPressed: () {
+                //load from disk:
+                loadPreferences();
+
+              } )
+      );
+
+      //this line shows it: context is the page
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+    });
   }
 
   //you are being removed
@@ -129,11 +151,25 @@ class _MyHomePageState extends State<MyHomePage> {
             Semantics(child: Image.asset("images/algonquin.jpg", height:100, width:100) ,
                 label: 'Algonquin College Logo',),
             ElevatedButton(onPressed: () { //paste the text written
-              setState((){
+                                        //passed in to Build(context)
+              showDialog<String>( context:context ,
+                builder: (context){
 
-                var txt = _controller.value.text;
-                //overwrite the text in textfield:
-                _controller.text = "see your text above:";
+                  return AlertDialog(
+                      title: Text("Alert!!"),
+                    content:Text("Do you really want to save your text?"),
+                    actions:[
+                      OutlinedButton(child:Text("Yes"), onPressed:
+                          () async
+                      {
+                       var prefs = EncryptedSharedPreferences();//await SharedPreferences.getInstance(); //async, we must wait
+                                        //Key is the variable name ,     //what the user typed:
+                        await prefs.setString("MySavedString", _controller.value.text);
+                        Navigator.pop(context);//hide the dialog
+                      }),
+                      OutlinedButton(child:Text("No"), onPressed: (){ Navigator.pop(context); }),
+                       ] );
+
               });
 
             } //<-- Lambda, or anonymous function
@@ -174,4 +210,28 @@ class _MyHomePageState extends State<MyHomePage> {
   {
 
   }
+  //load this in a background thread
+  void loadPreferences( ) async //background thread
+   {
+    //start loading from disk, not async:
+    var prefs = EncryptedSharedPreferences();//await SharedPreferences.getInstance();
+
+
+    //Encrypted, this is async:
+    var str = await prefs.getString("MySavedString"); //Use the same variable as in setString()
+
+    //put back onto page:
+    if(str != null)
+      _controller.text = str; // see your string on the page
+   }
+
+  void loadPreferences2() //not async:
+  {
+    var prefs = EncryptedSharedPreferences();
+    prefs.getString("MySavedString").then((savedString){
+      if(savedString != null)
+        _controller.text = savedString; // see your string on the page
+    });
+  }
+
 }
