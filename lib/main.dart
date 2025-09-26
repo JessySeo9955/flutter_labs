@@ -168,7 +168,12 @@ class _MyHomePageState extends State<MyHomePage> {
                         Navigator.pop(context);//hide the dialog
                       }),
                       OutlinedButton(child:Text("No"), onPressed: (){ Navigator.pop(context); }),
-                       ] );
+                      OutlinedButton(child:Text("Clear data"), onPressed: (){
+                        var prefs = EncryptedSharedPreferences();
+                        prefs.clear();//deletes all data
+                        Navigator.pop(context); }),
+
+                    ] );
 
               });
 
