@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:in_class_examples/ListPage.dart';
 import 'DataRepository.dart';
 import 'ProfilePage.dart';
+import 'ListPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,7 +34,8 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const MyHomePage(title: 'Flutter Demo Home Page'),
-        '/profile': (context) => ProfilePage()
+        '/profile': (context) => ProfilePage(),
+        '/list': (context) => ListPage()
       }
     );
   }
@@ -111,6 +114,10 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               child: Text("Login"),
             ),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/list'),
+              child: Text("ListPage"),
+            ),
           ],
         ),
       )
@@ -148,37 +155,5 @@ class _MyHomePageState extends State<MyHomePage> {
     await handler();
   }
 
-  // Future<void> saveUserInfoToEncryptPreferences() async {
-  //   var prefs = EncryptedSharedPreferences();
-  //   await prefs.setString(PREFERENCE_USERNAME_KEY, _usernameController.value.text);
-  //   await prefs.setString(PREFERENCE_PASSWORD_KEY, _passwordController.value.text);
-  //  }
 
-  // Future<void> clearUserInfoToEncryptPreferences() async {
-  //   var prefs = EncryptedSharedPreferences();
-  //   prefs.clear();
-  // }
-
-  // void loadUserInfoToEncryptPreferences() {
-  //   var prefs = EncryptedSharedPreferences();
-  //   Future.wait([
-  //     prefs.getString(PREFERENCE_USERNAME_KEY),
-  //     prefs.getString(PREFERENCE_PASSWORD_KEY),
-  //   ]).then((results) {
-  //     final username = results[0];
-  //     final password = results[1];
-  //     if (username != '' || password != '') {
-  //         _usernameController.text = username;
-  //         _passwordController.text =  password;
-  //         displaySandbox();
-  //     }
-  //   });
-  // }
-
-  // void displaySandbox() {
-  //   var snackBar = SnackBar(
-  //       content: Text('Username and Password loaded')
-  //   );
-  //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  // }
 }
