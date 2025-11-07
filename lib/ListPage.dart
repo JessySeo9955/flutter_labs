@@ -1,4 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:in_class_examples/database/PersonDatabase.dart';
+
+import 'dao/PersonDAO.dart';
+import 'entity/Person.dart';
+
+
+
+
 
 class ListPage extends StatefulWidget {
   @override
@@ -8,15 +16,30 @@ class ListPage extends StatefulWidget {
 }
 
 class ListPageState extends State<ListPage> {
-  List<String> lists1 = [];
+  List<Person> lists1 = [];
   late TextEditingController _itemController;
   late TextEditingController _quantityController;
+
+  late PersonDAO personDAO;
 
   @override
   void initState() {
     super.initState();
+
     _itemController = TextEditingController();
     _quantityController = TextEditingController();
+
+    $FloorPersonDatabase
+        .databaseBuilder('PersonFile.db')
+        .build()
+        .then((database) {
+      personDAO = database.personDAO;
+      return personDAO.getAllPersons();
+    }).then((persons) {
+      setState(() {
+        lists1.addAll(persons);
+      });
+    });
   }
 
   @override
@@ -54,9 +77,15 @@ class ListPageState extends State<ListPage> {
                 Flexible(
                   flex: 1,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       setState(() {
-                        lists1.add(_itemController.text + ':' + _quantityController.text);
+                        Person person = new Person(Person.ID++, int.parse(_quantityController.text), _itemController.text);
+
+                        personDAO.insertPerson(person);
+                        setState(() {
+                          lists1.add(person);
+                        });
+                        // lists1.add(_itemController.text + ':' + _quantityController.text);
                         _itemController.text = '';
                         _quantityController.text = '';
                       });
@@ -81,7 +110,7 @@ class ListPageState extends State<ListPage> {
               itemCount: lists1.length,
               itemBuilder: (context, rowNum) {
                 return GestureDetector(
-                  child: Text("${rowNum + 1}: ${lists1[rowNum]}"),
+                  child: Text("${rowNum + 1}: ${lists1[rowNum].name}"),
                   onLongPress: () {
 
                     showDialog<String>(
@@ -91,10 +120,11 @@ class ListPageState extends State<ListPage> {
                           content: const Text('are you sure?'),
                           actions: <Widget>[
                             FilledButton(child:Text("Yes"), onPressed:() {
+                              Person person = lists1[rowNum];
+                              personDAO.deletePerson(person);
                               setState(() {
                                 lists1.removeAt(rowNum);
                               });
-
                               Navigator.pop(context);
                             }),
                             FilledButton(child:Text("Cancel"), onPressed:() {
