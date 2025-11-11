@@ -19,6 +19,7 @@ class ListPageState extends State<ListPage> {
   List<Person> lists1 = [];
   late TextEditingController _itemController;
   late TextEditingController _quantityController;
+  int selectedItem = -1; // nothing is selected
 
   late PersonDAO personDAO;
 
@@ -48,6 +49,54 @@ class ListPageState extends State<ListPage> {
     _quantityController.dispose();
     super.dispose();
   }
+
+  Widget reactiveLayout() {
+    var size = MediaQuery.of(context).size;
+    var height = size.height;
+    var width = size.width;
+
+
+    if ((width > height) && (width > 720)) {
+      // tablet
+      return Row(children: [
+        Expanded(child: listPage(), flex: 1), // left side 33%
+        Expanded(child: detailsPage(), flex: 2)  // right side 66%
+      ]);
+    } else {
+      // portrait mode / phone
+      if (selectedItem == -1) {
+        return listPage();       // show list first
+      } else {
+        return detailsPage();    // show details after selection
+      }
+    }
+  }
+
+  Widget detailsPage() {
+    if (selectedItem != -1) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Name: ${lists1[selectedItem].name}'),
+            Text('Quantity: ${lists1[selectedItem].quantity}'),
+            ElevatedButton(onPressed: () {
+              deletePersonFromDatabase(selectedItem);
+              selectedItem = -1;
+            }, child: Text('Delete')),
+            ElevatedButton(onPressed: () {
+              setState(() {
+                selectedItem = -1;
+              });
+            }, child: Text('Close'))
+          ],
+        ),
+      );
+    } else {
+      return Text('Please select an Person from the list', style: TextStyle(fontSize: 30.0));
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +144,7 @@ class ListPageState extends State<ListPage> {
                 ),
               ],
             ),
-            listPage(),
+            Expanded(child:  reactiveLayout(),)
           ],
         ),
       ),
@@ -103,7 +152,8 @@ class ListPageState extends State<ListPage> {
   }
 
   Widget listPage() {
-    return Expanded(
+    return Padding(
+      padding: EdgeInsets.all(8),
       child: lists1.length == 0
           ? Text("There are no items")
           : ListView.builder(
@@ -111,8 +161,12 @@ class ListPageState extends State<ListPage> {
               itemBuilder: (context, rowNum) {
                 return GestureDetector(
                   child: Text("${rowNum + 1}: ${lists1[rowNum].name}"),
+                  onTap: () {
+                    setState(() {
+                      selectedItem = rowNum;
+                    });
+                  },
                   onLongPress: () {
-
                     showDialog<String>(
                         context: context,
                         builder: (BuildContext context) => AlertDialog(
@@ -120,11 +174,7 @@ class ListPageState extends State<ListPage> {
                           content: const Text('are you sure?'),
                           actions: <Widget>[
                             FilledButton(child:Text("Yes"), onPressed:() {
-                              Person person = lists1[rowNum];
-                              personDAO.deletePerson(person);
-                              setState(() {
-                                lists1.removeAt(rowNum);
-                              });
+                              deletePersonFromDatabase(rowNum);
                               Navigator.pop(context);
                             }),
                             FilledButton(child:Text("Cancel"), onPressed:() {
@@ -139,5 +189,13 @@ class ListPageState extends State<ListPage> {
               },
             ),
     );
+  }
+
+  void deletePersonFromDatabase(int rowNum) {
+  Person person = lists1[rowNum];
+  personDAO.deletePerson(person);
+  setState(() {
+  lists1.removeAt(rowNum);
+  });
   }
 }
